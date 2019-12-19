@@ -1,1 +1,1 @@
-# translate_to_seg
+#translate-to-seg

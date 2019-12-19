@@ -234,11 +234,14 @@ class Trans2Net(BaseModel):
             # np.savetxt(save_dir+'/target.txt',self.target_index_all)
             # np.savetxt(save_dir+'/pred.txt',self.pred_index_all)
             np.savetxt(save_dir+'/class_baseline.txt',self.accuracy_class)
-            from sklearn.metrics import confusion_matrix
-            cm=confusion_matrix(self.target_index_all,self.pred_index_all)
-            util.plot_confusion_matrix(cm,self.val_loader.dataset.classes)
+            # self.target_index_all=np.loadtxt(save_dir+'/target.txt')
+            # self.pred_index_all=np.loadtxt(save_dir+'/pred.txt')
+
+            # from sklearn.metrics import confusion_matrix
+            # cm=confusion_matrix(self.target_index_all,self.pred_index_all)
+            util.plot_confusion_matrix(self.target_index_all,self.pred_index_all,self.val_loader.dataset.classes)
             print('Evaluation Time: {0} sec'.format(time.time() - start_time))
-            self.write_loss(phase=self.phase)
+            # self.write_loss(phase=self.phase)
             return
 
         if cfg.MULTIPROCESSING_DISTRIBUTED:

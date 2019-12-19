@@ -351,35 +351,82 @@ def smooth_plot(PSP_csv_path,UNet_csv_path,FCN_csv_path):
     plt.legend(loc='lower right')
     # plt.show()
     plt.savefig('../images/smooth.png', format='png')
-def plot_confusion_matrix(cm, classes,
-                          normalize=True,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues):
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
+# def plot_confusion_matrix(cm, classes,
+#                           normalize=True,
+#                           title='Confusion matrix',
+#                           cmap=plt.cm.Blues):
+#     if normalize:
+#         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+#         print("Normalized confusion matrix")
+#     else:
+#         print('Confusion matrix, without normalization')
 
-    print(cm)
+#     print(cm)
+    
+    
 
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
 
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",fontsize=4,
-                 color="white" if cm[i, j] > thresh else "black")
+#     # plt.figure(figsize=(12, 8), dpi=120)
 
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.tight_layout()
+#     ind_array = np.arange(len(labels))
+#     x, y = np.meshgrid(ind_array, ind_array)
+#     fmt = '.2f' if normalize else 'd'
+#     thresh = cm.max() / 2.
+#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+#         plt.text(j, i, format(cm[i, j], fmt),
+#                  ha="center",va="center",fontsize=7,
+#                  color="white" if cm[i, j] > thresh else "black")
+#     plt.imshow(cm, interpolation='nearest', cmap=cmap)
+#     plt.title(title)
+#     plt.colorbar()
+#     tick_marks = np.arange(len(classes))
+#     plt.xticks(tick_marks, classes, rotation=90)
+#     plt.yticks(tick_marks, classes)
+#     plt.ylabel('True label')
+#     plt.xlabel('Predicted label')
+#     plt.tight_layout()
+#     plt.savefig('./images/cfm.png', format='png')
+
+from sklearn.metrics import confusion_matrix
+
+def plot_confusion_matrix(y_true,y_pred,labels):
+    tick_marks = np.array(range(len(labels)))+0.5
+
+    def _plot_confusion_matrix(cm,title='Confusion Matrix', cmap=plt.cm.Blues):
+        plt.imshow(cm, interpolation='nearest', cmap=cmap)
+        plt.title(title)
+        plt.colorbar()
+        xlocations = np.array(range(len(labels)))
+        plt.xticks(xlocations, labels, rotation=90) 
+        plt.yticks(xlocations, labels)
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
+
+    cm = confusion_matrix(y_true, y_pred)
+    np.set_printoptions(precision=2)
+    cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    print (cm_normalized)
+    plt.figure(figsize=(12, 8), dpi=120)
+
+    ind_array = np.arange(len(labels))
+    x, y = np.meshgrid(ind_array, ind_array)
+
+    for x_val, y_val in zip(x.flatten(), y.flatten()):
+        c = cm_normalized[y_val][x_val]
+        if c > 0.3:
+            plt.text(x_val, y_val, "%0.2f" % (c,), color='white', fontsize=7, va='center', ha='center')
+        else:
+            plt.text(x_val, y_val, "%0.2f" % (c,), color='black', fontsize=7, va='center', ha='center')
+    # offset the tick
+    # plt.gca().set_xticks(tick_marks, minor=True)
+    # plt.gca().set_yticks(tick_marks, minor=True)
+    # # plt.gca().xaxis.set_ticks_position('none')
+    # # plt.gca().yaxis.set_ticks_position('none')
+    # plt.grid(True, which='minor', linestyle='-')
+    plt.gcf().subplots_adjust(bottom=0.15)
+
+    _plot_confusion_matrix(cm_normalized, title='Normalized confusion matrix')
+    # show confusion matrix
     plt.savefig('./images/cfm.png', format='png')
 
 if __name__=='__main__':
